@@ -1,0 +1,19 @@
+[Unit]
+Description=Agente de cadastro pelo WhatsApp (Z-API + LLM)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__DEST__
+# Node com caminho absoluto: o PATH do systemd --user não enxerga um Node do nvm.
+ExecStart=__NODE__ __DEST__/node_modules/tsx/dist/cli.mjs src/server.ts
+# Caiu, OOM, máquina reiniciada: volta sozinho. Nenhuma conversa se perde
+# (o estado de cada cliente fica em data/sessoes).
+Restart=always
+RestartSec=5
+StandardOutput=append:__DEST__/data/agente.log
+StandardError=append:__DEST__/data/agente.log
+
+[Install]
+WantedBy=default.target
